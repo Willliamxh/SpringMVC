@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+
+    <!--第二步之前，讲这个web的版本给重新改一下：https://blog.csdn.net/senAr59/article/details/80538821-->
+    <!--第二步骤：声明springmvc核心对象DispatcherServlet-->
+    <!--要使用servlet那就得先声明springmvc的核心对象DispatcherServlet
+        这个类其实是个servlet，用户在访问它的时候，他会被创建 也就是我得写个mapping
+
+        访问mymvc地址后， 报错 文件没有找到。找的文件 /WEB-INF/springmvc-servlet.xml
+                                                  /WEB-INF/myweb-servlet.xml
+        错误原因：
+           在Servlet的init()方法中，创建springmvc使用的容器对象WebApplicationContext.
+           WebApplicationContext ctx = new ClassPathXmlApplicationContext(配置文件)。
+           自定义配置文件方式1：配置文件的默认路径： /WEB-INF/<servlet-name>-servlet.xml
+            自定义配置文件方式2：但是一般我们都去resources那边去配置 也就是自定义配置信息
+
+
+           DispatcherServlet作用：
+           1.在init()中创建springmvc的容器对象  WebApplicationContext. 创建springmvc配置文件在的所有java对象
+             java对象，就是Controller对象。
+           2.DispatcherServlet是一个Servlet ，能够接受请求。
+
+    -->
+    <servlet>
+        <servlet-name>myweb</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <!--自定义配置文件的位置  我们指定类路径之下的springMVC-->
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:springmvc.xml</param-value>
+        </init-param>
+        <!--启动时，创建中央调度的实例，进行装载对象-->
+        <!--
+          表示服务器tomcat创建对象的顺序， 是个整数值， 大于等于0.
+          数值越小，创建对象的时间越早。
+       -->
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <!--最初：当我访问这个mymvc的时候，我上面那个中央调度器才会被访问创建对象。 当我load-on-startup
+      之后：只要启动服务，就直接创建对象了-->
+
+    <servlet-mapping>
+        <servlet-name>myweb</servlet-name>
+        <!--
+                   url-pattern 作用: 把一些请求交给指定的servlet处理 比如：
+                   <url-pattern>/mymvc</url-pattern>
+                    <url-pattern>/query</url-pattern>
+                    …… 这种列表形式 但是我们不可能把所有的列表都列出来
+                   所以，我们使用中央调度器（DispatcherServlet）
+                   1. 使用扩展名方式， 格式 *.xxx ,  xxx是自定义的扩展名。
+                      例如  *.do , *.action, *.mvc 等等. 不能使用*.jsp
+                      http://localhost:8080/myweb/some.do
+                      http://localhost:8080/myweb/user/list/queryUser.do
+                      http://localhost:8080/myweb/user/list/list.do
+                      为什么不能用*.jsp
+                      http://localhost:8080/myweb/user/list/index.jsp
+                      我是访问视图呢？还是把这个请求交给myweb处理呢？
+
+                   2. 使用斜杠 "/"
+                -->
+        <url-pattern>*.do</url-pattern>
+    </servlet-mapping>
+
+
+
+
+
+
+</web-app>
